@@ -24,6 +24,7 @@ on:
 
 permissions:
   contents: read
+  actions: write   # keep the schedule alive
 
 concurrency:
   group: publish
@@ -39,6 +40,16 @@ jobs:
       changed: ${{ steps.state.outputs.changed }}
     steps:
       - uses: actions/checkout@v4
+
+      # GitHub disables schedules in public repositories after 60 days without
+      # activity; enabling the workflow again, once a day, resets that clock.
+      - name: Keep the schedule alive
+        if: github.event_name == 'schedule'
+        run: |
+          if [ "$(date -u +%H)" = 00 ]; then
+            gh api -X PUT "repos/$GITHUB_REPOSITORY/actions/workflows/publish.yml/enable" \
+              || echo "::warning::could not re-enable the workflow"
+          fi
 
       - name: Newest releases
         id: state
