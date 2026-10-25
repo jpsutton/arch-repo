@@ -1,0 +1,8 @@
+# The projects whose Arch packages go into the repository, one per line:
+#   <owner/repo> <release key fingerprint>
+# The publish workflow takes the *.pkg.tar.zst of each one's newest release. Every
+# package must carry a valid signature (.sig) from that project's release key, whose
+# public half is keys/sources/<repo>.asc; the fingerprint here pins it.
+jpsutton/patchbay 0D3A064DDF8B635FD85894E9B3A7618B4B88E5D7
+jpsutton/omnimark 5F2FBC3C175D49D9F491219897A9E84185E02236
+jpsutton/nulamp 928D2737FE5D5FA50DC6EBACE5F8026348A38A7F

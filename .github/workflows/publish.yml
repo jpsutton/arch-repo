@@ -1,0 +1,93 @@
+# Rebuild the pacman repository from each project's newest release (sources.txt)
+# and publish it on GitHub Pages: https://<owner>.github.io/arch-repo/<arch>/.
+#
+# Nothing is rebuilt: the packages come from the projects' GitHub Releases, are
+# checked against their release keys, re-signed with the repository key
+# (ARCH_REPO_GPG_KEY) and indexed with repo-add.
+#
+# Triggers:
+#   - schedule: hourly; publishes only when a source has a new release (compared
+#     with the published state.txt).
+#   - repository_dispatch (type package-released): a project's release workflow
+#     can send it to publish at once (the same check applies).
+#   - workflow_dispatch and pushes to main: always rebuild.
+name: publish
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  repository_dispatch:
+    types: [package-released]
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    outputs:
+      changed: ${{ steps.state.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Newest releases
+        id: state
+        run: |
+          set -euo pipefail
+          scripts/state.sh > state.txt
+          { echo '```'; cat state.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          changed=true
+          case "$GITHUB_EVENT_NAME" in
+            schedule | repository_dispatch)
+              url="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/state.txt"
+              if curl -fsSL "$url?t=$(date +%s)" -o published.txt && cmp -s state.txt published.txt; then
+                changed=false
+                echo "No new releases since the last publish" >> "$GITHUB_STEP_SUMMARY"
+              fi
+              ;;
+          esac
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+
+      - name: Download the packages
+        if: steps.state.outputs.changed == 'true'
+        run: scripts/collect.sh state.txt collected
+
+      - name: Sign and index (archlinux container)
+        if: steps.state.outputs.changed == 'true'
+        env:
+          ARCH_REPO_GPG_KEY: ${{ secrets.ARCH_REPO_GPG_KEY }}
+        run: |
+          docker run --rm -e ARCH_REPO_GPG_KEY \
+            -v "$GITHUB_WORKSPACE:/src" -w /src archlinux:latest \
+            scripts/build-repo.sh collected site
+          sudo chown -R "$(id -u):$(id -g)" site
+          cp state.txt site/
+
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.state.outputs.changed == 'true'
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
