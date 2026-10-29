@@ -7,6 +7,7 @@ One signed pacman repository for my projects' Arch Linux packages:
 | `patchbay`, `patchbayd` | [Patchbay](https://github.com/jpsutton/patchbay) |
 | `omnimark` | [Omnimark](https://github.com/jpsutton/omnimark) |
 | `nulamp` | [nulamp](https://github.com/jpsutton/nulamp) |
+| `freecell` | [FreeCell](https://github.com/jpsutton/freecell) |
 
 It always carries each project's newest release.
 
