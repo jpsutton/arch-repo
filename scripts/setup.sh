@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Adds the jpsutton pacman repository (Patchbay, Omnimark, nulamp) to this Arch
+# Adds the jpsutton pacman repository (Patchbay, Omnimark, nulamp, FreeCell) to this Arch
 # Linux system.
 #
 #   setup.sh                    add the repo, trust the key, sync
