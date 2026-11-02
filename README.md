@@ -40,9 +40,9 @@ sudo pacman -Sy patchbay
 
 ## How it works
 
-Nothing is built here. The [publish workflow](.github/workflows/publish.yml) runs every hour and when a project's release workflow triggers it. It:
+Nothing is built here. The [publish workflow](.github/workflows/publish.yml) runs when a project's release workflow triggers it (or on a push to `main`). It:
 
-1. Finds each project's newest release ([sources.txt](sources.txt)). If none changed since the last publish, it stops.
+1. Finds each project's newest release ([sources.txt](sources.txt)).
 2. Downloads the release's `*.pkg.tar.zst` and checks each one's signature against that project's release key ([keys/sources](keys/sources), pinned by fingerprint in `sources.txt`).
 3. Signs every package and the database with the repository key and runs `repo-add` ([scripts/build-repo.sh](scripts/build-repo.sh)).
 4. Deploys the result to GitHub Pages: `<arch>/jpsutton.db`, the packages and their signatures, the public key and the setup script.
@@ -53,10 +53,10 @@ The repository key's public half is [keys/jpsutton-signing-key.asc](keys/jpsutto
 
 1. Have its release workflow attach `*.pkg.tar.zst` files to the GitHub Release, each with a detached `.sig` from the project's release key.
 2. Add its public key as `keys/sources/<repo>.asc` and a line to `sources.txt`.
-3. Optionally, have its release workflow start `publish.yml` so the repository updates at once instead of within the hour:
+3. Have its release workflow start `publish.yml` after creating the release:
 
    ```bash
    gh workflow run publish.yml -R jpsutton/arch-repo
    ```
 
-   That needs a fine-grained token with Actions: read and write on this repository, stored in the project as the `ARCH_REPO_DISPATCH_TOKEN` secret.
+   That needs a fine-grained token with Actions: read and write on this repository, stored in the project as the `ARCH_REPO_DISPATCH_TOKEN` secret. Without it, this repository is not updated.
