@@ -8,16 +8,14 @@
 # Triggers:
 #   - schedule: hourly; publishes only when a source has a new release (compared
 #     with the published state.txt).
-#   - repository_dispatch (type package-released): a project's release workflow
-#     can send it to publish at once (the same check applies).
-#   - workflow_dispatch and pushes to main: always rebuild.
+#   - workflow_dispatch: a project's release workflow (or a manual run) publishes
+#     at once; always rebuilds.
+#   - pushes to main: always rebuild.
 name: publish
 
 on:
   schedule:
     - cron: "17 * * * *"
-  repository_dispatch:
-    types: [package-released]
   workflow_dispatch:
   push:
     branches: [main]
@@ -59,7 +57,7 @@ jobs:
           { echo '```'; cat state.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
           changed=true
           case "$GITHUB_EVENT_NAME" in
-            schedule | repository_dispatch)
+            schedule)
               url="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/state.txt"
               if curl -fsSL "$url?t=$(date +%s)" -o published.txt && cmp -s state.txt published.txt; then
                 changed=false
