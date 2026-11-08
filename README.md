@@ -8,7 +8,6 @@ One signed pacman repository for my projects' Arch Linux packages:
 | `omnimark` | [Omnimark](https://github.com/jpsutton/omnimark) |
 | `nulamp` | [nulamp](https://github.com/jpsutton/nulamp) |
 | `freecell` | [FreeCell](https://github.com/jpsutton/freecell) |
-| `metroplex3k`, `metroplex3k-tools` | [Metroplex3K](https://github.com/jpsutton/Metroplex3K) |
 
 It always carries each project's newest release.
 
