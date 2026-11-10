@@ -9,6 +9,7 @@ One signed pacman repository for my projects' Arch Linux packages:
 | `nulamp` | [nulamp](https://github.com/jpsutton/nulamp) |
 | `freecell` | [FreeCell](https://github.com/jpsutton/freecell) |
 | `metroplex3k`, `metroplex3k-tools` | [Metroplex3K](https://github.com/jpsutton/Metroplex3K) |
+| `virt-glass` | [Virt Glass](https://github.com/jpsutton/virt-glass) |
 
 It always carries each project's newest release.
 
