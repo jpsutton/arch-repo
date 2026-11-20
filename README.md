@@ -11,6 +11,7 @@ One signed pacman repository for my projects' Arch Linux packages:
 | `metroplex3k`, `metroplex3k-tools` | [Metroplex3K](https://github.com/jpsutton/Metroplex3K) |
 | `virt-glass` | [Virt Glass](https://github.com/jpsutton/virt-glass) |
 | `exceeded` | [Exceeded](https://github.com/jpsutton/exceeded) |
+| `ogle` | [ogle](https://github.com/jpsutton/ogle) |
 
 It always carries each project's newest release.
 
